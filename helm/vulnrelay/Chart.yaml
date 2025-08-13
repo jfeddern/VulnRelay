@@ -1,0 +1,20 @@
+# ABOUTME: Helm chart metadata for VulnRelay vulnerability collection service.
+# ABOUTME: Defines chart version, application version, and dependencies.
+
+apiVersion: v2
+name: vulnrelay
+description: A Helm chart for VulnRelay that collects vulnerability data from multiple cloud providers and sources
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - kubernetes
+  - vulnerability
+  - security
+  - monitoring
+  - multi-cloud
+maintainers:
+  - name: Jan
+home: https://github.com/jfeddern/VulnRelay
+sources:
+  - https://github.com/jfeddern/VulnRelay

@@ -1,0 +1,31 @@
+{{- if .Values.iamPolicy.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "vulnrelay.fullname" . }}-iam-policy
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "vulnrelay.labels" . | nindent 4 }}
+data:
+  policy.json: |
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "ecr:DescribeImageScanFindings",
+            "ecr:DescribeImages"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sts:AssumeRole"
+          ],
+          "Resource": "arn:aws:iam::*:role/VulnRelayRole"
+        }
+      ]
+    }
+{{- end }}
