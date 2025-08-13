@@ -1,5 +1,5 @@
 # Multi-stage build for minimal security footprint
-FROM golang:1.24.6-alpine3.22 AS builder
+FROM golang:1.25.0-alpine3.22 AS builder
 
 # Build arguments for metadata
 ARG VERSION=dev
