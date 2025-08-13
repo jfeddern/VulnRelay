@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vulnrelay.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "vulnrelay.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "vulnrelay.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "vulnrelay.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "vulnrelay.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+          name: metrics
+          protocol: TCP
+        env:
+        - name: MODE
+          value: {{ .Values.config.mode | quote }}
+        - name: PORT
+          value: {{ .Values.service.port | quote }}
+        - name: AWS_ECR_ACCOUNT_ID
+          value: {{ .Values.config.ecrAccountId | quote }}
+        - name: AWS_ECR_REGION
+          value: {{ .Values.config.ecrRegion | quote }}
+        - name: SCRAPE_INTERVAL
+          value: {{ .Values.config.scrapeInterval | quote }}
+        - name: LOG_LEVEL
+          value: {{ .Values.config.logLevel | quote }}
+        {{- if .Values.config.assumeRoleArn }}
+        - name: AWS_IAM_ASSUME_ROLE_ARN
+          value: {{ .Values.config.assumeRoleArn | quote }}
+        {{- end }}
+        {{- if .Values.config.imageListFile }}
+        - name: IMAGE_LIST_FILE
+          value: {{ .Values.config.imageListFile | quote }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

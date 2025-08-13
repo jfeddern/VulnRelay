@@ -1,0 +1,113 @@
+# Default values for vulnrelay.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: vulnrelay
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Namespace to deploy the application
+namespace: default
+
+# Application configuration
+config:
+  # Operation mode: cluster or local
+  mode: "cluster"
+  
+  # AWS ECR configuration - REQUIRED
+  ecrAccountId: "123456789012"  # Replace with actual account ID
+  ecrRegion: "us-east-1"        # Replace with actual region
+  
+  # Optional: AWS IAM role to assume (for cross-account access)
+  # assumeRoleArn: "arn:aws:iam::123456789012:role/ECRVulnerabilityExporterRole"
+  
+  # Scraping configuration
+  scrapeInterval: "5m"
+  
+  # Logging configuration
+  logLevel: "info"
+  
+  # Local mode configuration (only used when mode=local)
+  # imageListFile: "/path/to/images.json"
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations:
+    # EKS Pod Identity annotation - replace ACCOUNT_ID with actual account ID
+    eks.amazonaws.com/role-arn: arn:aws:iam::ACCOUNT_ID:role/VulnRelayRole
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# RBAC configuration
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+# IAM Policy ConfigMap
+iamPolicy:
+  # Specifies whether IAM policy ConfigMap should be created
+  create: true
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+    - ALL
+
+service:
+  type: ClusterIP
+  port: 9090
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+    prometheus.io/path: "/metrics"
+
+# ServiceMonitor for Prometheus Operator
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  path: /metrics
+  scheme: http
+  labels: {}
+
+# Probes configuration
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "100m"
+  limits:
+    memory: "128Mi"
+    cpu: "200m"
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
