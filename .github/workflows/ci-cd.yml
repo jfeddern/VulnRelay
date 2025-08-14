@@ -7,8 +7,12 @@ on:
   push:
     branches: [ main, develop ]
     tags: [ 'v*' ]
+    paths-ignore:
+      - '*.md'
   pull_request:
     branches: [ main, develop ]
+    paths-ignore:
+      - '*.md'
 
 env:
   REGISTRY: ghcr.io
@@ -18,7 +22,7 @@ env:
 
 jobs:
   test:
-    name: Test & Security Checks
+    name: Validate, Build & Test Application
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code

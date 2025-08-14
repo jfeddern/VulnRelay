@@ -2,28 +2,6 @@
 
 A production-ready Prometheus exporter that retrieves and exposes vulnerability information for container images deployed in Kubernetes clusters. VulnRelay supports multiple cloud providers and vulnerability sources with extensible architecture.
 
-## 🚀 Quick Start
-
-### **Test with Mock Data (No AWS Required)**
-```bash
-# Download or build VulnRelay
-go build -o vulnrelay ./cmd/vulnrelay
-
-# Start with mock data
-./vulnrelay --mock
-
-# Test endpoints
-curl http://localhost:9090/health
-curl http://localhost:9090/metrics | head -20
-```
-
-### **Deploy with Helm**
-```bash
-helm install vulnrelay ./helm/vulnrelay \
-  --set config.ecrAccountId=YOUR_ACCOUNT_ID \
-  --set config.ecrRegion=YOUR_REGION
-```
-
 ## 📖 Documentation
 
 | Topic | Description | Quick Links |
@@ -79,4 +57,4 @@ ecr_vulnerability_fix_available{fix_status="YES"} 1
 
 ## 📄 License
 
-[MIT License](LICENSE) - see the [LICENSE](LICENSE) file for details.
+See the [LICENSE](LICENSE) file for details.

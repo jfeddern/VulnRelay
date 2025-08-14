@@ -394,39 +394,56 @@ go tool pprof http://localhost:9090/debug/pprof/heap
 
 ## 🚀 Release Process
 
-### Version Tagging
+VulnRelay uses an automated GitHub Actions workflow for releases. See the [Release Workflow Guide](release-workflow.md) for comprehensive documentation.
 
-```bash
-# Create and push version tag
-git tag -a v1.2.0 -m "Release v1.2.0"
-git push origin v1.2.0
-```
+### Quick Release Steps
 
-### Building Releases
+1. **Validate release readiness**:
+   ```bash
+   make validate-release
+   # or
+   ./scripts/validate-release.sh all
+   ```
+
+2. **Create and push version tag**:
+   ```bash
+   git tag -a v1.2.0 -m "Release v1.2.0"
+   git push origin v1.2.0
+   ```
+
+3. **Monitor the automated workflow** in GitHub Actions
+
+The workflow automatically:
+- Runs comprehensive tests and security scans
+- Builds multi-architecture Docker images
+- Packages and publishes Helm charts
+- Signs all artifacts with Cosign
+- Creates GitHub release with artifacts
+- Updates documentation
+
+### Manual Release (Development/Testing)
+
+For local development and testing:
 
 ```bash
 # Build for all platforms
 make build-all
 
 # Build Docker image
-docker build -t ghcr.io/jfeddern/vulnrelay:v1.2.0 .
+make docker-build
 
-# Push to registry
-docker push ghcr.io/jfeddern/vulnrelay:v1.2.0
+# Test Helm chart
+make helm-lint helm-test
 ```
 
-### Helm Chart Updates
+### Release Artifacts
 
-```bash
-# Update Chart.yaml version
-vim helm/vulnrelay/Chart.yaml
-
-# Package chart
-helm package helm/vulnrelay
-
-# Push to registry
-helm push vulnrelay-1.2.0.tgz oci://ghcr.io/jfeddern/vulnrelay/charts
-```
+Each release produces:
+- Multi-architecture Docker images on GHCR
+- Helm charts in OCI registry
+- Cosign signatures for all artifacts
+- SBOM (Software Bill of Materials)
+- Security scan results
 
 ## 🤝 Contributing
 
