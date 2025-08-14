@@ -1,7 +1,7 @@
 # ABOUTME: Comprehensive CI/CD workflow for VulnRelay project.
 # ABOUTME: Handles build, test, security checks, and publishing to ghcr.io.
 
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
@@ -15,10 +15,9 @@ on:
       - '*.md'
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
   HELM_VERSION: "3.18.4"
   GO_VERSION: "1.24"
+  MIN_COVERAGE: 70
 
 jobs:
   test:
@@ -63,12 +62,17 @@ jobs:
     - name: Run tests
       run: go test -v -race -coverprofile=coverage.out ./...
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage.out
-        flags: unittests
-        name: codecov-umbrella
+    - name: Check test coverage
+      run: |
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print substr($3, 1, length($3)-1)}')
+        echo "Total test coverage: ${COVERAGE}%"
+          
+        # Require minimum ${{ env.MIN_COVERAGE }}% coverage
+        if (( $(echo "$COVERAGE < ${{ env.MIN_COVERAGE }}" | bc -l) )); then
+          echo "❌ Test coverage ($COVERAGE%) is below minimum requirement (${{ env.MIN_COVERAGE }}%)"
+          exit 1
+        fi
+        echo "✅ Test coverage meets requirements: ${COVERAGE}%"
 
     - name: Build application
       run: go build -v -o vulnrelay ./cmd/vulnrelay
