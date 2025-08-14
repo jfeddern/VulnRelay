@@ -1,0 +1,41 @@
+# Git
+.git/
+.gitignore
+.github/
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Development files
+.env
+.env.local
+.vscode/
+.idea/
+
+# Build artifacts
+vulnrelay
+coverage.out
+coverage.html
+dist/
+
+# Test files
+*_test.go
+testdata/
+
+# CI/CD
+scripts/
+examples/
+
+# Dependencies (will be downloaded in container)
+vendor/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log
+/tmp/
