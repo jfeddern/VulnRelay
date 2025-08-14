@@ -415,7 +415,7 @@ VulnRelay uses an automated GitHub Actions workflow for releases. See the [Relea
 
 The workflow automatically:
 - Runs comprehensive tests and security scans
-- Builds multi-architecture Docker images
+- Builds Docker images for linux/amd64
 - Packages and publishes Helm charts
 - Signs all artifacts with Cosign
 - Creates GitHub release with artifacts
@@ -439,7 +439,7 @@ make helm-lint helm-test
 ### Release Artifacts
 
 Each release produces:
-- Multi-architecture Docker images on GHCR
+- Docker images for linux/amd64 on GHCR
 - Helm charts in OCI registry
 - Cosign signatures for all artifacts
 - SBOM (Software Bill of Materials)

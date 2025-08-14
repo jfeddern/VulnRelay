@@ -54,11 +54,11 @@ The release workflow consists of 8 main jobs that run in sequence:
 - **Duration**: ~2-3 minutes
 
 ### 3. **Build Docker** (`build-docker`)
-- Builds multi-architecture Docker images (amd64, arm64)
+- Builds Docker image for linux/amd64
 - Pushes to GitHub Container Registry (GHCR)
 - Runs Trivy security scan on the image
 - Generates Software Bill of Materials (SBOM)
-- **Duration**: ~5-8 minutes
+- **Duration**: ~3-5 minutes
 
 ### 4. **Build Helm** (`build-helm`)
 - Updates Helm chart version and app version
@@ -96,7 +96,7 @@ Each successful release produces several artifacts:
 
 ### Docker Images
 ```bash
-# Multi-architecture images on GHCR
+# Linux/amd64 images on GHCR
 ghcr.io/jfeddern/vulnrelay:v1.0.0
 ghcr.io/jfeddern/vulnrelay:1.0.0
 ghcr.io/jfeddern/vulnrelay:1.0
@@ -137,7 +137,7 @@ helm install vulnrelay oci://ghcr.io/jfeddern/vulnrelay/charts/vulnrelay --versi
 ### Build Security
 - **Minimal permissions** for each job
 - **Dependency caching** with integrity checks
-- **Multi-architecture builds** (amd64, arm64)
+- **Linux/amd64 builds**
 - **Static analysis** with gosec and govulncheck
 
 ## 🎛️ Configuration
